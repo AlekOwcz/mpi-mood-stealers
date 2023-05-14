@@ -1,0 +1,88 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+ACK_DEV	util.h	16;"	d
+ACK_LAB	util.h	17;"	d
+APP_PKT	util.h	21;"	d
+FALSE	main.h	14;"	d
+FINISH	util.h	22;"	d
+FLAGS	Makefile	/^FLAGS=-g$/;"	m
+HEADERS	Makefile	/^HEADERS=$(SOURCES:.c=.h)$/;"	m
+INF	util.h	25;"	d
+InAwaitDevice	util.h	/^typedef enum {InStart, InPrepare, InAwaitDevice, InHunt, InAwaitLab, InWorkLab, InFinish} state_t;$/;"	e	enum:__anon2
+InAwaitLab	util.h	/^typedef enum {InStart, InPrepare, InAwaitDevice, InHunt, InAwaitLab, InWorkLab, InFinish} state_t;$/;"	e	enum:__anon2
+InFinish	util.h	/^typedef enum {InStart, InPrepare, InAwaitDevice, InHunt, InAwaitLab, InWorkLab, InFinish} state_t;$/;"	e	enum:__anon2
+InHunt	util.h	/^typedef enum {InStart, InPrepare, InAwaitDevice, InHunt, InAwaitLab, InWorkLab, InFinish} state_t;$/;"	e	enum:__anon2
+InPrepare	util.h	/^typedef enum {InStart, InPrepare, InAwaitDevice, InHunt, InAwaitLab, InWorkLab, InFinish} state_t;$/;"	e	enum:__anon2
+InStart	util.h	/^typedef enum {InStart, InPrepare, InAwaitDevice, InHunt, InAwaitLab, InWorkLab, InFinish} state_t;$/;"	e	enum:__anon2
+InWorkLab	util.h	/^typedef enum {InStart, InPrepare, InAwaitDevice, InHunt, InAwaitLab, InWorkLab, InFinish} state_t;$/;"	e	enum:__anon2
+MAINH	main.h	2;"	d
+MPI_PAKIET_T	util.c	/^MPI_Datatype MPI_PAKIET_T;$/;"	v
+NITEMS	util.h	12;"	d
+QUEUE_CAPACITY	main.h	17;"	d
+RELEASE	util.h	20;"	d
+REQUEST_DEV	util.h	18;"	d
+REQUEST_LAB	util.h	19;"	d
+ROOT	main.h	18;"	d
+SEC_IN_STATE	main.h	15;"	d
+SOURCES	Makefile	/^SOURCES=$(wildcard *.c)$/;"	m
+STATE_CHANGE_PROB	main.h	16;"	d
+TRUE	main.h	13;"	d
+UTILH	util.h	2;"	d
+WATEK_GLOWNY_H	watek_glowny.h	2;"	d
+WATEK_KOMUNIKACYJNY_H	watek_komunikacyjny.h	2;"	d
+ackLock	main.c	/^pthread_mutex_t ackLock = PTHREAD_MUTEX_INITIALIZER;$/;"	v
+ackNum	main.c	/^int ackNum;$/;"	v
+awaitDevice	watek_glowny.c	/^void awaitDevice(){$/;"	f
+awaitLab	watek_glowny.c	/^void awaitLab(){$/;"	f
+changeState	util.c	/^void changeState( state_t newState )$/;"	f
+charge	main.c	/^int charge;$/;"	v
+check_thread_support	main.c	/^void check_thread_support(int provided)$/;"	f
+counterDev	main.c	/^int counterDev;$/;"	v
+counterLock	main.c	/^pthread_mutex_t counterLock = PTHREAD_MUTEX_INITIALIZER;$/;"	v
+debug	main.h	62;"	d
+debug	main.h	64;"	d
+devReqs	main.c	/^packet_t devReqs[QUEUE_CAPACITY];$/;"	v
+devReqsLock	main.c	/^pthread_mutex_t devReqsLock = PTHREAD_MUTEX_INITIALIZER;$/;"	v
+finalizuj	main.c	/^void finalizuj()$/;"	f
+getTsByRank	util.c	/^int getTsByRank(packet_t* queue, int rank){$/;"	f
+hasPriority	util.c	/^bool hasPriority(int myRank, int myTs, int otherRank, int otherTs){$/;"	f
+hunt	watek_glowny.c	/^void hunt(){$/;"	f
+inicjuj_typ_pakietu	util.c	/^void inicjuj_typ_pakietu()$/;"	f
+labReqs	main.c	/^packet_t labReqs[QUEUE_CAPACITY];$/;"	v
+main	main.c	/^int main(int argc, char **argv)$/;"	f
+mainLoop	watek_glowny.c	/^void mainLoop()$/;"	f
+max	watek_komunikacyjny.c	/^int max(int val1, int val2) {$/;"	f
+name	util.c	/^    const char *name;$/;"	m	struct:tagNames_t	file:
+num_dev	main.c	/^int rank, num_thief, num_dev = 2, num_lab = 2;$/;"	v
+num_lab	main.c	/^int rank, num_thief, num_dev = 2, num_lab = 2;$/;"	v
+num_thief	main.c	/^int rank, num_thief, num_dev = 2, num_lab = 2;$/;"	v
+packet_t	util.h	/^} packet_t;$/;"	t	typeref:struct:__anon1
+popFirst	util.c	/^int popFirst(packet_t* queue){$/;"	f
+prepare	watek_glowny.c	/^void prepare(){$/;"	f
+println	main.h	68;"	d
+pushBack	util.c	/^void pushBack(packet_t* queue, int rank, int ts){$/;"	f
+rank	main.c	/^int rank, num_thief, num_dev = 2, num_lab = 2;$/;"	v
+rank	util.h	/^    int rank;      \/* rank *\/$/;"	m	struct:__anon1
+releaseDevice	watek_glowny.c	/^void *releaseDevice(void *ptr){$/;"	f
+resetQueue	util.c	/^void resetQueue(packet_t* queue){$/;"	f
+sendPacket	util.c	/^void sendPacket(packet_t *pkt, int destination, int tag)$/;"	f
+sortQueue	util.c	/^void sortQueue(packet_t* queue){$/;"	f
+stan	util.c	/^state_t stan=InStart;$/;"	v
+start	watek_glowny.c	/^void start(){$/;"	f
+startKomWatek	watek_komunikacyjny.c	/^void *startKomWatek(void *ptr)$/;"	f
+stateMut	util.c	/^pthread_mutex_t stateMut = PTHREAD_MUTEX_INITIALIZER;$/;"	v
+state_t	util.h	/^typedef enum {InStart, InPrepare, InAwaitDevice, InHunt, InAwaitLab, InWorkLab, InFinish} state_t;$/;"	t	typeref:enum:__anon2
+tag	util.c	/^    int tag;$/;"	m	struct:tagNames_t	file:
+tag2string	util.c	/^const char *const tag2string( int tag )$/;"	f
+tagNames	util.c	/^} tagNames[] = { { "pakiet aplikacyjny", APP_PKT }, { "finish", FINISH}, $/;"	v	typeref:struct:tagNames_t
+tagNames_t	util.c	/^struct tagNames_t{$/;"	s	file:
+threadDevice	main.c	/^pthread_t threadKom, threadDevice;$/;"	v
+threadKom	main.c	/^pthread_t threadKom, threadDevice;$/;"	v
+ts	main.c	/^int ts = 0;$/;"	v
+ts	util.h	/^    int ts;       \/* timestamp (zegar lamporta *\/$/;"	m	struct:__anon1
+tsLock	main.c	/^pthread_mutex_t tsLock = PTHREAD_MUTEX_INITIALIZER;$/;"	v
+workLab	watek_glowny.c	/^void workLab(){$/;"	f

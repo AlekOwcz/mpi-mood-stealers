@@ -1,11 +1,19 @@
 #include "main.h"
-#include "watek_komunikacyjny.h"
+#include "threadCommunication.h"
+
+#include "util.h"
+#include "variables.h"
+#include "constants.h"
+#include "types.h"
+#include "queue.h"
+#include <pthread.h>
+
 
 /* wątek komunikacyjny; zajmuje się odbiorem i reakcją na komunikaty */
-void *startKomWatek(void *ptr)
+void *startComThread(void *ptr)
 {
     MPI_Status status;
-    int is_message = FALSE;
+    //int is_message = FALSE;
     packet_t pakiet;
     /* Obrazuje pętlę odbierającą pakiety o różnych typach */
     while ( stan!=InFinish ) {
@@ -18,7 +26,7 @@ void *startKomWatek(void *ptr)
         switch ( status.MPI_TAG ) {
             // 6.1
             case RELEASE:
-                println("Otrzymalem RELEASE")
+                println("Otrzymalem RELEASE");
                 pthread_mutex_lock(&counterLock);
                 // 6.1.1
                 counterDev++;
@@ -26,7 +34,7 @@ void *startKomWatek(void *ptr)
                 break;
             // 6.2
             case REQUEST_DEV:
-                println("Otrzymalem REQUEST_DEV")
+                println("Otrzymalem REQUEST_DEV");
                 // 6.2.1
                 if(stan == InAwaitDevice){
                     pthread_mutex_lock(&devReqsLock);
@@ -53,7 +61,7 @@ void *startKomWatek(void *ptr)
             case ACK_DEV:
                 // 6.4.1
                 if(stan == InAwaitDevice) {
-                    println("Otrzymalem ACK_DEV")
+                    println("Otrzymalem ACK_DEV");
                     pthread_mutex_lock(&ackLock);
                     ackNum++;
                     pthread_mutex_unlock(&ackLock);
@@ -63,6 +71,7 @@ void *startKomWatek(void *ptr)
                 break;
         }
     }
+    pthread_exit(NULL);
 }
 
 int max(int val1, int val2) {

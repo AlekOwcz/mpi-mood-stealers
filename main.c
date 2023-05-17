@@ -1,99 +1,71 @@
-/* w main.h także makra println oraz debug -  z kolorkami! */
-#include "main.h"
-#include "watek_glowny.h"
-#include "watek_komunikacyjny.h"
+#include "threadMain.h"            /* Main thread */
+#include "threadCommunication.h"   /* Communication thread */
 
-/*
- * W main.h extern int rank (zapowiedź) w main.c int rank (definicja)
- * Zwróćcie uwagę, że każdy proces ma osobą pamięć, ale w ramach jednego
- * procesu wątki współdzielą zmienne - więc dostęp do nich powinien
- * być obwarowany muteksami. Rank i size akurat są write-once, więc nie trzeba,
- * ale zob util.c oraz util.h - zmienną state_t state i funkcję changeState
- *
- */
-int counterDev;
-int rank, num_thief, num_dev = 2, num_lab = 2;
-int charge;
-packet_t devReqs[QUEUE_CAPACITY];
-packet_t labReqs[QUEUE_CAPACITY];
-int ackNum;
-int ts = 0;
-pthread_mutex_t tsLock = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t counterLock = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t ackLock = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t devReqsLock = PTHREAD_MUTEX_INITIALIZER;
-/* 
- * Każdy proces ma dwa wątki - główny i komunikacyjny
- * w plikach, odpowiednio, watek_glowny.c oraz (siurpryza) watek_komunikacyjny.c
- * 
- *
- */
+#include "util.h"
 
-pthread_t threadKom, threadDevice;
+#include "variables.h"
+#include "constants.h"
+#include "types.h"
 
-void finalizuj()
+#include <mpi.h>
+#include <stdio.h>
+#include <pthread.h>
+#include <stdlib.h>
+void finalize()
 {
     pthread_mutex_destroy( &stateMut);
-    /* Czekamy, aż wątek potomny się zakończy */
-    println("czekam na wątek \"komunikacyjny\"\n" );
+    /* Wait for child threads */
+    println("Awaiting communication thread\n" );
     pthread_join(threadKom,NULL);
-    println("czekam na wątek \"zwalniania sprzetu\"\n" );
+    println("Awaiting device freeing thread\n" );
     pthread_join(threadDevice, NULL);
     MPI_Type_free(&MPI_PAKIET_T);
     MPI_Finalize();
 }
 
-void check_thread_support(int provided)
+void checkThreadSupport(int provided)
 {
-    printf("THREAD SUPPORT: chcemy %d. Co otrzymamy?\n", provided);
+    printf("THREAD SUPPORT: Expected: %d, Provided:\n", provided);
     switch (provided) {
         case MPI_THREAD_SINGLE: 
-            printf("Brak wsparcia dla wątków, kończę\n");
-            /* Nie ma co, trzeba wychodzić */
-	    fprintf(stderr, "Brak wystarczającego wsparcia dla wątków - wychodzę!\n");
-	    MPI_Finalize();
-	    exit(-1);
-	    break;
+            printf("\t Lacking thread support - exitting...\n");
+            fprintf(stderr, "Lacking thread support\n");
+            MPI_Finalize();
+            exit(-1);
+            break;
         case MPI_THREAD_FUNNELED: 
-            printf("tylko te wątki, ktore wykonaly mpi_init_thread mogą wykonać wołania do biblioteki mpi\n");
-	    break;
+            printf("\t Only threads that execute mpi_init_thread can make calls to MPI library\n");
+	        break;
         case MPI_THREAD_SERIALIZED: 
-            /* Potrzebne zamki wokół wywołań biblioteki MPI */
-            printf("tylko jeden watek naraz może wykonać wołania do biblioteki MPI\n");
-	    break;
-        case MPI_THREAD_MULTIPLE: printf("Pełne wsparcie dla wątków\n"); /* tego chcemy. Wszystkie inne powodują problemy */
-	    break;
-        default: printf("Nikt nic nie wie\n");
+            printf("\t Only one thread at a time can make calls to MPI library\n");
+	        break;
+        case MPI_THREAD_MULTIPLE: 
+            printf("\t Full thread support\n");
+	        break;
+        default: 
+            printf("\t Unknown\n");
     }
+    return;
 }
 
 
 int main(int argc, char **argv)
 {
-    MPI_Status status;
     int provided;
     MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
-    check_thread_support(provided);
+    checkThreadSupport(provided);
     srand(rank);
-    /* zob. util.c oraz util.h */
-    inicjuj_typ_pakietu(); // tworzy typ pakietu
+
+    initPacketType(); 
     MPI_Comm_size(MPI_COMM_WORLD, &num_thief);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    /* startKomWatek w watek_komunikacyjny.c 
-     * w vi najedź kursorem na nazwę pliku i wciśnij klawisze gf
-     * powrót po wciśnięciu ctrl+6
-     * */
-    pthread_create(&threadKom, NULL, startKomWatek , 0);
 
-    /* mainLoop w watek_glowny.c 
-     * w vi najedź kursorem na nazwę pliku i wciśnij klawisze gf
-     * powrót po wciśnięciu ctrl+6
-     * */
-    mainLoop(); // możesz także wcisnąć ctrl-] na nazwie funkcji
-		// działa, bo używamy ctags (zob Makefile)
-		// jak nie działa, wpisz set tags=./tags :)
-    
-    finalizuj();
+    pthread_create(&threadKom, NULL, startComThread , 0);
+
+    mainLoop();
+
+    finalize();
+
     return 0;
 }
 

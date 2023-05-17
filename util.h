@@ -1,48 +1,45 @@
-#ifndef UTILH
-#define UTILH
+#ifndef UTIL_H
+#define UTIL_H
 #include "main.h"
 #include <stdbool.h>
-
-/* typ pakietu */
-typedef struct {
-    int ts;       /* timestamp (zegar lamporta */
-    int rank;      /* rank */
-} packet_t;
-/* packet_t ma dwa pola, więc NITEMS=2. Wykorzystane w inicjuj_typ_pakietu */
-#define NITEMS 2
-
-/* Typy wiadomości */
-/* TYPY PAKIETÓW */
-#define ACK_DEV     1
-#define ACK_LAB     2
-#define REQUEST_DEV 3
-#define REQUEST_LAB 4
-#define RELEASE     5
-#define APP_PKT     6
-#define FINISH      7
-
-/* Wartosc symbolizujaca nulla w kolejkach */
-#define INF 999999999
-/* zarzadzanie kolejkami */
-void pushBack(packet_t* queue, int rank, int ts);
-int popFirst(packet_t* queue);
-void resetQueue(packet_t* queue);
-void sortQueue(packet_t* queue);
-
-/* Rozstrzyga priorytet miedzy soba a innym procesem */
+#include "types.h"
+#include <stdio.h>
+/* Decides priority between processes */
 bool hasPriority(int myRank, int myTs, int otherRank, int otherTs);
-int getTsByRank(packet_t* queue, int rank);
 
-extern MPI_Datatype MPI_PAKIET_T;
-void inicjuj_typ_pakietu();
+/* Creates a message type for packet_t */
+void initPacketType();
 
 /* wysyłanie pakietu, skrót: wskaźnik do pakietu (0 oznacza stwórz pusty pakiet), do kogo, z jakim typem */
 void sendPacket(packet_t *pkt, int destination, int tag);
 
-typedef enum {InStart, InPrepare, InAwaitDevice, InHunt, InAwaitLab, InWorkLab, InFinish} state_t;
-extern state_t stan;
-extern pthread_mutex_t stateMut;
-/* zmiana stanu, obwarowana muteksem */
+/* State change, uses mutex */
 void changeState( state_t );
+
+/* macro debug - działa jak printf, kiedy zdefiniowano
+   DEBUG, kiedy DEBUG niezdefiniowane działa jak instrukcja pusta 
+   
+   używa się dokładnie jak printfa, tyle, że dodaje kolorków i automatycznie
+   wyświetla rank
+
+   w związku z tym, zmienna "rank" musi istnieć.
+
+   w printfie: definicja znaku specjalnego "%c[%d;%dm [%d]" escape[styl bold/normal;kolor [RANK]
+                                           FORMAT:argumenty doklejone z wywołania debug poprzez __VA_ARGS__
+					   "%c[%d;%dm"       wyczyszczenie atrybutów    27,0,37
+                                            UWAGA:
+                                                27 == kod ascii escape. 
+                                                Pierwsze %c[%d;%dm ( np 27[1;10m ) definiuje styl i kolor literek
+                                                Drugie   %c[%d;%dm czyli 27[0;37m przywraca domyślne kolory i brak pogrubienia (bolda)
+                                                ...  w definicji makra oznacza, że ma zmienną liczbę parametrów
+                                            
+*/
+#ifdef DEBUG
+#define debug(FORMAT,...) printf("%c[%d;%dm [%d]: LAMPORT[%d]:" FORMAT "%c[%d;%dm\n",  27, (1+(rank/7))%2, 31+(6+rank)%7, rank, ts, ##__VA_ARGS__, 27,0,37);
+#else
+#define debug(...) ;
+#endif
+
+#define println(FORMAT,...) printf("%c[%d;%dm [%d]: TS [%d]: ACK [%d]: DEV [%d]: " FORMAT "%c[%d;%dm\n",  27, (1+(rank/7))%2, 31+(6+rank)%7, rank, ts, ackNum, counterDev, ##__VA_ARGS__, 27,0,37);
 
 #endif

@@ -1,7 +1,7 @@
 SOURCES=$(wildcard *.c)
 HEADERS=$(SOURCES:.c=.h)
 #FLAGS=-DDEBUG -g
-FLAGS=-g
+FLAGS=-g -Wall
 
 all: main tags
 
@@ -13,8 +13,8 @@ clear: clean
 clean:
 	rm main a.out
 
-tags: ${SOURCES} ${HEADERS}
-	ctags -R .
+# tags: ${SOURCES} ${HEADERS}
+# 	ctags -R .
 
 run: main Makefile tags
 	mpirun -oversubscribe -np 8 ./main

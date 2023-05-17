@@ -1,12 +1,19 @@
-#include "main.h"
-#include "watek_glowny.h"
+#include "variables.h"
+#include "constants.h"
+#include "types.h"
+#include "util.h"
+#include "threadMain.h"
+#include "queue.h"
+#include <stdlib.h>
+#include <unistd.h>
+
 
 void mainLoop()
 {
 	changeState(InStart);
     srandom(rank);
-    int tag;
-    int perc;
+    // int tag;
+    // int perc;/
 
 	while (1){
 		switch (stan){
@@ -28,6 +35,8 @@ void mainLoop()
 			case InWorkLab:
 				workLab();
 				break;
+			case InFinish:
+				return; //
 		}
 		sleep(SEC_IN_STATE);
 	}
@@ -48,7 +57,7 @@ void start(){
 // 5.2
 void prepare(){
 	// 5.2.1
-	println("Nic nie robie")
+	println("Nic nie robie");
 	int perc;
 	do{
 		perc = random()%100;
@@ -113,13 +122,13 @@ void hunt(){
 	// 5.4.3
 	int prayFoundChance = 80;
 	if(random()%100 < prayFoundChance){	// 5.4.3.1
-		println("Wychodze z sekcji krytycznej - Znalazlem ofiare")
+		println("Wychodze z sekcji krytycznej - Znalazlem ofiare");
 		// 5.4.3.1.1
 		pthread_create( &threadDevice, NULL, releaseDevice, 0);
 		// 5.4.3.1.2
 		changeState(InAwaitLab);
 	} else{	// 5.4.3.2
-		println("Wychodze z sekcji krytycznej - Nie znalazlem ofiary")
+		println("Wychodze z sekcji krytycznej - Nie znalazlem ofiary");
 		// 5.4.3.2.1
 		packet_t *pkt = malloc(sizeof(packet_t));
 		for (int i=0;i<=num_thief-1;i++)
@@ -132,7 +141,7 @@ void hunt(){
 
 // TODO
 void awaitLab(){
-	println("Robotaju w Labie")
+	println("Robotaju w Labie");
 	sleep(5);
 	changeState(InPrepare);
 };
@@ -145,11 +154,12 @@ void workLab(){
 void *releaseDevice(void *ptr){
 	// 5.4.3.1.1.1 TODO
 	sleep(5);
-	println("Sprzet zostal naladowany")
+	println("Sprzet zostal naladowany");
 	// 5.4.3.1.1.2
 	packet_t *pkt = malloc(sizeof(packet_t));
 	for (int i=0;i<=num_thief-1;i++)
 		sendPacket(pkt, i, RELEASE);
 	free(pkt);
 	// 5.4.3.1.1.3
+	pthread_exit(NULL);
 }

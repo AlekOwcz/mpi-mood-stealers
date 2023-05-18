@@ -72,16 +72,14 @@ void awaitDevice(){
 	counterDev--;
 	pthread_mutex_unlock(&counterLock);
 	// ?.?.? Dodaje sie do kolejki zeby mial jak sie porownac dla innych requestow
-	addToQueue(devReqs, rank, ts);
-	pthread_mutex_unlock(&devReqsLock);
-	pthread_mutex_unlock(&tsLock);
 
 	// pthread_mutex_lock(&ackLock);
 	// //ackNum = 0; // moja inwencja (na wszelki wypadek, nw czy cos zmienia)
 	// pthread_mutex_unlock(&ackLock);
 	// 5.3.2
 	requestDevice(rank);
-
+	pthread_mutex_unlock(&devReqsLock);
+	pthread_mutex_unlock(&tsLock);
 
 	// 5.3.3
 	while(1) {
@@ -105,9 +103,16 @@ void hunt(){
 	// 5.4.1
 	for (int i = 0; i < numThief; i++){
 		if(devReqs[i] != INF){
+			pthread_mutex_lock(&counterLock);
 			sendPacket(i, ACK_DEV);
+			counterDev--;
+			pthread_mutex_unlock(&counterLock);
 		}
 	}
+	// ?.?.? clear queue
+	pthread_mutex_lock(&devReqsLock);
+	resetQueue(devReqs);
+	pthread_mutex_unlock(&devReqsLock);
 	// 5.4.2
 	println("I have acquired a device");
 	int huntDuration = random()%1000;

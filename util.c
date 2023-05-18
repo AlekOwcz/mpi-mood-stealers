@@ -31,9 +31,8 @@ void requestDevice(int rank){
     println("Sending REQUEST_DEV to all")
     packet_t* pkt = malloc(sizeof(packet_t));
     pkt->rank = rank;
-    pthread_mutex_lock(&tsLock);
     pkt->ts = ts++;
-    pthread_mutex_unlock(&tsLock);
+    addToQueue(devReqs, rank, ts);
     for (int i = 0; i < numThief; i++)
 		if (i != rank) {
             debug("Sending %s to %d", tag2string(REQUEST_DEV), i);

@@ -14,7 +14,7 @@ void mainLoop()
     srandom(rank);
 
 	while (1){
-		switch (stan){
+		switch (state){
 			case InStart:
 				start();
 				break;

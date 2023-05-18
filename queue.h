@@ -5,7 +5,6 @@
 void addToQueue(int*, int, int);
 void leaveQueue(int*, int);
 void resetQueue(int*);
-void sortQueue(packet_t*);
 int getTsByRank(int* queue, int rank);
 
 #endif

@@ -1,4 +1,3 @@
-#include "main.h"
 #include "threadCommunication.h"
 
 #include "util.h"
@@ -9,24 +8,22 @@
 #include <pthread.h>
 
 
-/* wątek komunikacyjny; zajmuje się odbiorem i reakcją na komunikaty */
+/* Communication thread: Receiving and handling messages */
 void *startComThread(void *ptr)
 {
     MPI_Status status;
-    //int is_message = FALSE;
-    packet_t pakiet;
-    /* Obrazuje pętlę odbierającą pakiety o różnych typach */
+    packet_t packet;
     while ( stan!=InFinish ) {
-	    debug("czekam na recv");
-        MPI_Recv( &pakiet, 1, MPI_PAKIET_T, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+	    debug("Waiting on MPI_Recv");
+        MPI_Recv( &packet, 1, MPI_PACKET_T, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
         pthread_mutex_lock(&tsLock);
-        ts = max(ts, pakiet.ts) + 1;
+        ts = max(ts, packet.ts) + 1;
         pthread_mutex_unlock(&tsLock);
 
         switch ( status.MPI_TAG ) {
             // 6.1
             case RELEASE:
-                println("Otrzymalem RELEASE");
+                println("Received RELEASE");
                 pthread_mutex_lock(&counterLock);
                 // 6.1.1
                 counterDev++;
@@ -34,19 +31,21 @@ void *startComThread(void *ptr)
                 break;
             // 6.2
             case REQUEST_DEV:
-                println("Otrzymalem REQUEST_DEV");
+                println("Received REQUEST_DEV");
                 // 6.2.1
+                pthread_mutex_lock( &stateMut );
+
                 if(stan == InAwaitDevice){
                     pthread_mutex_lock(&devReqsLock);
                     int myTsInQ = getTsByRank(devReqs, rank);
                     // 6.2.1.1.1.1
-                    if(hasPriority(rank, myTsInQ, status.MPI_SOURCE, pakiet.ts)){
+                    if(hasPriority(rank, myTsInQ, status.MPI_SOURCE, packet.ts)){
                         pthread_mutex_lock(&counterLock);
                         counterDev--;
                         pthread_mutex_unlock(&counterLock);
-                        sendPacket(0, status.MPI_SOURCE, ACK_DEV);
+                        sendPacket(status.MPI_SOURCE, ACK_DEV);
                     } else { // 6.2.1.1.1.2
-                        pushBack(devReqs, status.MPI_SOURCE, pakiet.ts);
+                        addToQueue(devReqs, status.MPI_SOURCE, packet.ts);
                     }
                     pthread_mutex_unlock(&devReqsLock);
                 } else {
@@ -54,18 +53,22 @@ void *startComThread(void *ptr)
                     pthread_mutex_lock(&counterLock);
                     counterDev--;
                     pthread_mutex_unlock(&counterLock);
-                    sendPacket(0, status.MPI_SOURCE, ACK_DEV);
+                    sendPacket(status.MPI_SOURCE, ACK_DEV);
                 }
+
+                pthread_mutex_unlock( &stateMut );
                 break;
             // 6.4
             case ACK_DEV:
                 // 6.4.1
+                pthread_mutex_lock( &stateMut );
                 if(stan == InAwaitDevice) {
-                    println("Otrzymalem ACK_DEV");
+                    println("Received ACK_DEV");
                     pthread_mutex_lock(&ackLock);
                     ackNum++;
                     pthread_mutex_unlock(&ackLock);
                 }
+                pthread_mutex_unlock( &stateMut );
                 break;
             default:
                 break;

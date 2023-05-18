@@ -4,34 +4,17 @@
 #include <stdlib.h>
 #include "queue.h"
 
-void pushBack(packet_t* queue, int rank, int ts){
-    packet_t *q = malloc(sizeof(packet_t));
-	q->rank = rank;
-    q->ts = ts;
-    for(int i=0; i<QUEUE_CAPACITY; i++){
-        if(queue[i].rank == INF){
-            queue[i] = *q;
-            break;
-        }
-    }
+void addToQueue(int* queue, int rank, int ts){
+    queue[rank] = ts;
 }
 
-int popFirst(packet_t* queue){
-    sortQueue(queue);
-    int rank = queue[0].rank;
-    for(int i=1; i<QUEUE_CAPACITY; i++){
-        queue[i-1].rank = queue[i].rank;
-        queue[i-1].rank = queue[i].rank;
-        if(queue[i].rank == INF)
-            break;
-    }
-    return rank;
+void leaveQueue(int* queue, int rank){
+    queue[rank] = INF;
 }
 
-void resetQueue(packet_t* queue){
-    for(int i=0; i<QUEUE_CAPACITY; i++){
-        queue[i].rank = INF;
-        queue[i].ts = INF;
+void resetQueue(int* queue){
+    for(int i = 0; i < numThief; i++){
+        queue[i] = INF;
     }
 }
 
@@ -47,10 +30,6 @@ void sortQueue(packet_t* queue){
     }
 }
 
-int getTsByRank(packet_t* queue, int rank){
-    for(int i=0; i<QUEUE_CAPACITY; i++){
-        if(queue[i].rank == rank)
-            return queue[i].ts;
-    }
-    return -1;
+int getTsByRank(int* queue, int rank){
+    return queue[rank];
 }

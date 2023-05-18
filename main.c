@@ -1,25 +1,15 @@
-#include "threadMain.h"            /* Main thread */
-#include "threadCommunication.h"   /* Communication thread */
+#include "main.h" //All necessary includes
 
-#include "util.h"
 
-#include "variables.h"
-#include "constants.h"
-#include "types.h"
-
-#include <mpi.h>
-#include <stdio.h>
-#include <pthread.h>
-#include <stdlib.h>
 void finalize()
 {
     pthread_mutex_destroy( &stateMut);
     /* Wait for child threads */
     println("Awaiting communication thread\n" );
-    pthread_join(threadKom,NULL);
+    pthread_join(threadCom,NULL);
     println("Awaiting device freeing thread\n" );
     pthread_join(threadDevice, NULL);
-    MPI_Type_free(&MPI_PAKIET_T);
+    MPI_Type_free(&MPI_PACKET_T);
     MPI_Finalize();
 }
 
@@ -51,16 +41,27 @@ void checkThreadSupport(int provided)
 
 int main(int argc, char **argv)
 {
+    if (argc != 3){
+        printf("\n======\nFormat: make run THIEF={number of mood stealers} DEV={number of devices} LAB={number of stations in the laboratory}\n======\n\n");
+        return -1;
+    }
+
     int provided;
     MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
     checkThreadSupport(provided);
+
     srand(rank);
 
     initPacketType(); 
-    MPI_Comm_size(MPI_COMM_WORLD, &num_thief);
+    MPI_Comm_size(MPI_COMM_WORLD, &numThief);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    numDev = atoi(argv[1]);
+    numLab = atoi(argv[2]);
 
-    pthread_create(&threadKom, NULL, startComThread , 0);
+    devReqs = malloc(sizeof(int)*numThief);
+    labReqs = malloc(sizeof(int)*numThief);
+
+    pthread_create(&threadCom, NULL, startComThread , 0);
 
     mainLoop();
 

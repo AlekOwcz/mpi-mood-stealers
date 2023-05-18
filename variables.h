@@ -6,15 +6,14 @@
 
 extern int counterDev;
 extern int rank;
-extern int num_thief;
-extern int num_dev;
-extern int num_lab; 
-extern int charge;
+extern int numThief;
+extern int numDev;
+extern int numLab; 
 
-extern packet_t devReqs[QUEUE_CAPACITY];
-extern packet_t labReqs[QUEUE_CAPACITY];
+extern int* devReqs;
+extern int* labReqs;
 
-extern MPI_Datatype MPI_PAKIET_T;
+extern MPI_Datatype MPI_PACKET_T;
 extern int ackNum;
 extern int ts;
 
@@ -26,7 +25,7 @@ extern pthread_mutex_t stateMut;
 
 extern state_t stan;
 
-extern pthread_t threadKom, threadDevice;
+extern pthread_t threadCom, threadDevice;
 
 extern tagNames_t tagNames[];
 #endif

@@ -9,7 +9,7 @@ typedef struct {
     int rank;      /* rank */
 } packet_t;
 
-extern MPI_Datatype MPI_PAKIET_T;
+extern MPI_Datatype MPI_PACKET_T;
 
 typedef enum {InStart, InPrepare, InAwaitDevice, InHunt, InAwaitLab, InWorkLab, InFinish} state_t;
 

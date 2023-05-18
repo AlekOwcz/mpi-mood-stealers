@@ -4,13 +4,12 @@
 #include <pthread.h>
 
 int counterDev;
-int rank, num_thief, num_dev = 2, num_lab = 2; //numStealer, numDev, numLab
-int charge;
+int rank, numThief, numDev, numLab; 
 
-packet_t devReqs[QUEUE_CAPACITY];
-packet_t labReqs[QUEUE_CAPACITY];
+int* devReqs;
+int* labReqs;
 
-MPI_Datatype MPI_PAKIET_T;
+MPI_Datatype MPI_PACKET_T;
 int ackNum;
 int ts = 0;
 
@@ -23,7 +22,7 @@ pthread_mutex_t stateMut = PTHREAD_MUTEX_INITIALIZER;
 
 state_t stan=InStart;
 
-pthread_t threadKom, threadDevice; //threadCom
+pthread_t threadCom, threadDevice; //threadCom
 
 tagNames_t tagNames[MESSAGE_TYPE_COUNT] = { { "pakiet aplikacyjny", APP_PKT }, { "finish", FINISH}, 
                 { "potwierdzenie", ACK_DEV}, {"prośbę o sekcję krytyczną", REQUEST_DEV}, {"zwolnienie sekcji krytycznej", RELEASE} };

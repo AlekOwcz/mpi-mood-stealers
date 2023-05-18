@@ -1,9 +1,12 @@
 #ifndef UTIL_H
 #define UTIL_H
-#include "main.h"
+
 #include <stdbool.h>
 #include "types.h"
 #include <stdio.h>
+/* Sends REQUEST_DEV to all other processes */
+void requestDevice(int rank);
+
 /* Decides priority between processes */
 bool hasPriority(int myRank, int myTs, int otherRank, int otherTs);
 
@@ -11,10 +14,10 @@ bool hasPriority(int myRank, int myTs, int otherRank, int otherTs);
 void initPacketType();
 
 /* wysyłanie pakietu, skrót: wskaźnik do pakietu (0 oznacza stwórz pusty pakiet), do kogo, z jakim typem */
-void sendPacket(packet_t *pkt, int destination, int tag);
+void sendPacket(int destination, int tag);
 
 /* State change, uses mutex */
-void changeState( state_t );
+void changeState(state_t);
 
 /* macro debug - działa jak printf, kiedy zdefiniowano
    DEBUG, kiedy DEBUG niezdefiniowane działa jak instrukcja pusta 

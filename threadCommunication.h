@@ -1,5 +1,5 @@
-#ifndef WATEK_KOMUNIKACYJNY_H
-#define WATEK_KOMUNIKACYJNY_H
+#ifndef THREAD_COMMUNICATION_H
+#define THREAD_COMMUNICATION_H
 
 /* Communication thread: Receiving and handling messages */
 void *startComThread(void *ptr);

@@ -1,10 +1,10 @@
-#ifndef WATEK_GLOWNY_H
-#define WATEK_GLOWNY_H
+#ifndef THREAD_MAIN_H
+#define THREAD_MAIN_H
 
-/* pętla główna aplikacji: zmiany stanów itd */
+/* Main applicaion loop: handles state change and executes appropriate state actions */
 void mainLoop();
 
-/* funkcje stanów */
+/* State functions */
 void start();
 void prepare();
 void awaitDevice();
@@ -12,7 +12,7 @@ void hunt();
 void awaitLab();
 void workLab();
 
-/* funkcja zwalniania sprzetu po czasie */
+/* Function handling returning device (critical section) after random time */
 void *releaseDevice(void *ptr);
 
 #endif

@@ -17,4 +17,4 @@ clean:
 # 	ctags -R .
 
 run: main Makefile tags
-	mpirun -oversubscribe -np 8 ./main
+	mpirun -oversubscribe -np $(THIEF) ./main $(DEV) $(LAB)

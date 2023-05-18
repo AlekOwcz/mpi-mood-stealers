@@ -46,6 +46,7 @@ void requestStation(int rank){
     packet_t* pkt = malloc(sizeof(packet_t));
     pkt->rank = rank;
     pkt->ts = ++ts;
+    addToQueue(labReqs, rank, ts);
     for (int i = 0; i < numThief; i++)
 		if (i != rank) {
             debug("Sending %s to %d", tag2string(REQUEST_LAB), i);
@@ -55,13 +56,18 @@ void requestStation(int rank){
 }
 
 
-void sendPacket(int destination, int tag) {
+void sendPacket(int destination, int tag, int requestTS) {
     println("Sending %s to %d", tag2string(tag), destination);
     packet_t* pkt = malloc(sizeof(packet_t));
     pkt->rank = rank;
-    pthread_mutex_lock(&tsLock);
-    pkt->ts = ++ts;
-    pthread_mutex_unlock(&tsLock);
+    if(tag == ACK_LAB){
+        if(requestTS == -1) println("ERROR: requestTS NOT PROVIDED IN ACK_LAB MESSAGE")
+        pkt->ts = requestTS;
+    } else {
+        pthread_mutex_lock(&tsLock);
+        pkt->ts = ++ts;
+        pthread_mutex_unlock(&tsLock);
+    }
     MPI_Send(pkt, 1, MPI_PACKET_T, destination, tag, MPI_COMM_WORLD);
     free(pkt);
 }

@@ -15,7 +15,7 @@ bool hasPriority(int myRank, int myTs, int otherRank, int otherTs);
 void initPacketType();
 
 /* wysyłanie pakietu, skrót: wskaźnik do pakietu (0 oznacza stwórz pusty pakiet), do kogo, z jakim typem */
-void sendPacket(int destination, int tag);
+void sendPacket(int destination, int tag, int requestTS);
 
 /* State change, uses mutex */
 void changeState(state_t);

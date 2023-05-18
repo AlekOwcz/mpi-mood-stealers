@@ -23,7 +23,7 @@ void *startComThread(void *ptr)
         switch (status.MPI_TAG) {
             // 6.1
             case RELEASE:
-                println("Received RELEASE");
+                println("Received RELEASE from %d", status.MPI_SOURCE);
                 pthread_mutex_lock(&counterLock);
                 // 6.1.1
                 counterDev++;
@@ -32,7 +32,7 @@ void *startComThread(void *ptr)
                 break;
             // 6.2
             case REQUEST_DEV:
-                println("Received REQUEST_DEV");
+                println("Received REQUEST_DEV from %d", status.MPI_SOURCE);
                 // 6.2.1
                 pthread_mutex_lock( &stateMut );
 
@@ -44,7 +44,7 @@ void *startComThread(void *ptr)
                         pthread_mutex_lock(&counterLock);
                         counterDev--;
                         pthread_mutex_unlock(&counterLock);
-                        sendPacket(status.MPI_SOURCE, ACK_DEV);
+                        sendPacket(status.MPI_SOURCE, ACK_DEV, -1);
                     } else { // 6.2.1.1.1.2
                         addToQueue(devReqs, status.MPI_SOURCE, packet.ts);
                     }
@@ -54,13 +54,13 @@ void *startComThread(void *ptr)
                     pthread_mutex_lock(&counterLock);
                     counterDev--;
                     pthread_mutex_unlock(&counterLock);
-                    sendPacket(status.MPI_SOURCE, ACK_DEV);
+                    sendPacket(status.MPI_SOURCE, ACK_DEV, -1);
                 }
 
                 pthread_mutex_unlock( &stateMut );
                 break;
             case REQUEST_LAB:
-                println("Received REQUEST_LAB");
+                println("Received REQUEST_LAB from %d", status.MPI_SOURCE);
                 pthread_mutex_lock( &stateMut );
                 //6.3.1
                 if(state == InAwaitLab){
@@ -69,7 +69,7 @@ void *startComThread(void *ptr)
                     // 6.3.1.1.1.
                     if(hasPriority(rank, myTsInQ, status.MPI_SOURCE, packet.ts)){
                         // 6.3.1.1.1.1
-                        sendPacket(status.MPI_SOURCE, ACK_LAB);
+                        sendPacket(status.MPI_SOURCE, ACK_LAB, packet.ts);
                     } else { // 6.3.1.1.1.2
                         addToQueue(labReqs, status.MPI_SOURCE, packet.ts);
                     }
@@ -83,39 +83,40 @@ void *startComThread(void *ptr)
                         pthread_mutex_unlock(&labReqsLock);
                     } else {
                         //6.3.1.2.1.2
-                        sendPacket(status.MPI_SOURCE, ACK_LAB);
+                        sendPacket(status.MPI_SOURCE, ACK_LAB, packet.ts);
                     }
                 }
                 pthread_mutex_unlock( &stateMut );
                 break;
             // 6.4
             case ACK_DEV:
+                println("Received ACK_DEV from %d", status.MPI_SOURCE);
                 // 6.4.1
                 pthread_mutex_lock( &stateMut );
                 if(state == InAwaitDevice) {
-                    println("Received ACK_DEV");
                     pthread_mutex_lock(&ackLock);
                     ackNum++;
                     pthread_cond_signal(&condLock);
                     pthread_mutex_unlock(&ackLock);
-                }
+                } else println("ACK_DEV not awaited - ignoring");
                 pthread_mutex_unlock( &stateMut );
                 break;
             case ACK_LAB:
                 //6.5.1
                 pthread_mutex_lock( &stateMut );
                 if(state == InAwaitLab) {
-                    println("Received ACK_LAB");
+                    println("Received ACK_LAB from %d", status.MPI_SOURCE);
                     //6.5.1.1
-                    //pthread_mutex_lock(&labReqsLock);
-                    //if(packet.ts == labReqs[rank]){
+                    pthread_mutex_lock(&labReqsLock);
+                    if(packet.ts == labReqs[rank]){ //In ACK_LAB packet.ts == ts of the REQUEST_LAB message it responds to
                         //5.4.1.1.1
-                    //}
-                    //pthread_mutex_unlock(&labReqsLock);
-                    pthread_mutex_lock(&ackLock);
-                    ackNum++;
-                    pthread_cond_signal(&condLock);
-                    pthread_mutex_unlock(&ackLock);
+                        pthread_mutex_lock(&ackLock);
+                        ackNum++;
+                        pthread_cond_signal(&condLock);
+                        pthread_mutex_unlock(&ackLock);
+                    } else println("ACK_LAB outdated - ignoring")
+                    pthread_mutex_unlock(&labReqsLock);
+                    //6.5.1.2
                 }
                 pthread_mutex_unlock( &stateMut );
                 break;

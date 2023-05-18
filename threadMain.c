@@ -107,7 +107,7 @@ void hunt(){
 	for (int i = 0; i < numThief; i++){
 		if(devReqs[i] != INF){
 			pthread_mutex_lock(&counterLock);
-			sendPacket(i, ACK_DEV);
+			sendPacket(i, ACK_DEV, -1);
 			counterDev--;
 			pthread_mutex_unlock(&counterLock);
 		}
@@ -130,7 +130,7 @@ void hunt(){
 		println("Returning device - I couldn't find prey!");
 		// 5.4.3.2.1
 		for (int i = 0; i < numThief; i++)
-			sendPacket(i, RELEASE);
+			sendPacket(i, RELEASE, -1);
 		// 5.4.3.2.2
 		changeState(InPrepare);
 	}
@@ -167,7 +167,7 @@ void workLab(){
 	pthread_mutex_lock(&labReqsLock);
 	for (int i = 0; i < numThief; i++){
 		if(labReqs[i] != INF){
-			sendPacket(i, ACK_DEV);
+			sendPacket(i, ACK_LAB, labReqs[i]);
 		}
 	}
 	resetQueue(labReqs);
@@ -183,7 +183,7 @@ void *releaseDevice(void *ptr){
 	println("The device finished charging!");
 	// 5.4.3.1.1.2
 	for (int i = 0; i < numThief; i++)
-		sendPacket(i, RELEASE);
+		sendPacket(i, RELEASE, -1);
 	// 5.4.3.1.1.3
 	pthread_exit(NULL);
 }

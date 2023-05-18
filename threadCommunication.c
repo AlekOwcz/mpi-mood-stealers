@@ -60,7 +60,7 @@ void *startComThread(void *ptr)
                 pthread_mutex_unlock( &stateMut );
                 break;
             case REQUEST_LAB:
-                println("Received REQUEST_DEV");
+                println("Received REQUEST_LAB");
                 pthread_mutex_lock( &stateMut );
                 //6.3.1
                 if(state == InAwaitLab){

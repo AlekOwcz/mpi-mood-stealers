@@ -13,16 +13,13 @@
 #define APP_PKT     6
 #define FINISH      7
 
-#define MESSAGE_TYPE_COUNT 5
+#define MESSAGE_TYPE_COUNT 7
 
 /* Boolean */
 #define TRUE 1
 #define FALSE 0
 
 #define SEC_IN_STATE 2
-#define STATE_CHANGE_PROB 10
-#define QUEUE_CAPACITY 100
-#define ROOT 0
 
 #define CHARGE_TIME 5
 /* Represents NULL in queues */

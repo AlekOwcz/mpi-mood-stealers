@@ -20,9 +20,16 @@ pthread_mutex_t devReqsLock = PTHREAD_MUTEX_INITIALIZER;
 
 pthread_mutex_t stateMut = PTHREAD_MUTEX_INITIALIZER;
 
-state_t stan=InStart;
+state_t state = InStart;
 
 pthread_t threadCom, threadDevice; //threadCom
 
-tagNames_t tagNames[MESSAGE_TYPE_COUNT] = { { "pakiet aplikacyjny", APP_PKT }, { "finish", FINISH}, 
-                { "potwierdzenie", ACK_DEV}, {"prośbę o sekcję krytyczną", REQUEST_DEV}, {"zwolnienie sekcji krytycznej", RELEASE} };
+tagNames_t tagNames[MESSAGE_TYPE_COUNT] = { 
+    {"application packet", APP_PKT }, 
+    {"finish", FINISH}, 
+    {"accept device request", ACK_DEV},
+    {"accept laboratory request", ACK_LAB},
+    {"request device", REQUEST_DEV},
+    {"request laboratory", REQUEST_LAB},
+    {"release device", RELEASE}
+};

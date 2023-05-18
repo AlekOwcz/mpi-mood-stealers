@@ -13,14 +13,14 @@ void *startComThread(void *ptr)
 {
     MPI_Status status;
     packet_t packet;
-    while ( stan!=InFinish ) {
+    while (state!=InFinish) {
 	    debug("Waiting on MPI_Recv");
         MPI_Recv( &packet, 1, MPI_PACKET_T, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
         pthread_mutex_lock(&tsLock);
         ts = max(ts, packet.ts) + 1;
         pthread_mutex_unlock(&tsLock);
 
-        switch ( status.MPI_TAG ) {
+        switch (status.MPI_TAG) {
             // 6.1
             case RELEASE:
                 println("Received RELEASE");
@@ -35,7 +35,7 @@ void *startComThread(void *ptr)
                 // 6.2.1
                 pthread_mutex_lock( &stateMut );
 
-                if(stan == InAwaitDevice){
+                if(state == InAwaitDevice){
                     pthread_mutex_lock(&devReqsLock);
                     int myTsInQ = getTsByRank(devReqs, rank);
                     // 6.2.1.1.1.1
@@ -62,7 +62,7 @@ void *startComThread(void *ptr)
             case ACK_DEV:
                 // 6.4.1
                 pthread_mutex_lock( &stateMut );
-                if(stan == InAwaitDevice) {
+                if(state == InAwaitDevice) {
                     println("Received ACK_DEV");
                     pthread_mutex_lock(&ackLock);
                     ackNum++;

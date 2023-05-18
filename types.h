@@ -5,8 +5,8 @@
 #include "constants.h"
 
 typedef struct {
-    int ts;       /* timestamp (zegar lamporta */
-    int rank;      /* rank */
+    int ts;       /* timestamp (lamport clock) */
+    int rank;     /* rank */
 } packet_t;
 
 extern MPI_Datatype MPI_PACKET_T;

@@ -8,7 +8,7 @@
 
 const char *const tag2string(int tag) {
     for (int i = 0; i < MESSAGE_TYPE_COUNT; i++)
-	    if ( tagNames[i].tag == tag )  return tagNames[i].name;
+	    if (tagNames[i].tag == tag)  return tagNames[i].name;
     return "<unknown>";
 }
 
@@ -56,11 +56,11 @@ void sendPacket(int destination, int tag) {
 
 void changeState( state_t newState ) {
     pthread_mutex_lock( &stateMut );
-    if (stan==InFinish) { 
+    if (state==InFinish) { 
 	    pthread_mutex_unlock( &stateMut );
         return;
     }
-    stan = newState;
+    state = newState;
     pthread_mutex_unlock( &stateMut );
 }
 

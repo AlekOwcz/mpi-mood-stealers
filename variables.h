@@ -23,7 +23,7 @@ extern pthread_mutex_t ackLock;
 extern pthread_mutex_t devReqsLock;
 extern pthread_mutex_t stateMut;
 
-extern state_t stan;
+extern state_t state;
 
 extern pthread_t threadCom, threadDevice;
 

@@ -173,6 +173,7 @@ void workLab(){
 	resetQueue(labReqs);
 	pthread_mutex_unlock(&labReqsLock);
 	//5.6.3
+	println("I'm leaving the lab!");
 	changeState(InPrepare);
 }
 

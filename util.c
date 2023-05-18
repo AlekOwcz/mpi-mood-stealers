@@ -4,7 +4,7 @@
 #include "variables.h"
 #include "constants.h"
 #include "types.h"
-
+#include "queue.h"
 
 const char *const tag2string(int tag) {
     for (int i = 0; i < MESSAGE_TYPE_COUNT; i++)
@@ -41,13 +41,26 @@ void requestDevice(int rank){
     free(pkt);
 }
 
+void requestStation(int rank){/////////////
+    println("Sending REQUEST_LAB to all")
+    packet_t* pkt = malloc(sizeof(packet_t));
+    pkt->rank = rank;
+    pkt->ts = ++ts;
+    for (int i = 0; i < numThief; i++)
+		if (i != rank) {
+            debug("Sending %s to %d", tag2string(REQUEST_LAB), i);
+            MPI_Send(pkt, 1, MPI_PACKET_T, i, REQUEST_LAB, MPI_COMM_WORLD);
+        }
+    free(pkt);
+}
+
 
 void sendPacket(int destination, int tag) {
     println("Sending %s to %d", tag2string(tag), destination);
     packet_t* pkt = malloc(sizeof(packet_t));
     pkt->rank = rank;
     pthread_mutex_lock(&tsLock);
-    pkt->ts = ts++;
+    pkt->ts = ++ts;
     pthread_mutex_unlock(&tsLock);
     MPI_Send(pkt, 1, MPI_PACKET_T, destination, tag, MPI_COMM_WORLD);
     free(pkt);

@@ -59,12 +59,59 @@ void *startComThread(void *ptr)
 
                 pthread_mutex_unlock( &stateMut );
                 break;
+            case REQUEST_LAB:
+                println("Received REQUEST_DEV");
+                pthread_mutex_lock( &stateMut );
+                //6.3.1
+                if(state == InAwaitLab){
+                    pthread_mutex_lock(&labReqsLock);
+                    int myTsInQ = getTsByRank(labReqs, rank);
+                    // 6.3.1.1.1.
+                    if(hasPriority(rank, myTsInQ, status.MPI_SOURCE, packet.ts)){
+                        // 6.3.1.1.1.1
+                        sendPacket(status.MPI_SOURCE, ACK_LAB);
+                    } else { // 6.3.1.1.1.2
+                        addToQueue(labReqs, status.MPI_SOURCE, packet.ts);
+                    }
+                    pthread_mutex_unlock(&labReqsLock);
+                } else {
+                    //6.3.1.2.1
+                    if(state == InWorkLab){
+                        //6.3.1.2.1.1
+                        pthread_mutex_lock(&labReqsLock);
+                        addToQueue(labReqs, status.MPI_SOURCE, packet.ts);
+                        pthread_mutex_unlock(&labReqsLock);
+                    } else {
+                        //6.3.1.2.1.2
+                        sendPacket(status.MPI_SOURCE, ACK_LAB);
+                    }
+                }
+                pthread_mutex_unlock( &stateMut );
+                break;
             // 6.4
             case ACK_DEV:
                 // 6.4.1
                 pthread_mutex_lock( &stateMut );
                 if(state == InAwaitDevice) {
                     println("Received ACK_DEV");
+                    pthread_mutex_lock(&ackLock);
+                    ackNum++;
+                    pthread_cond_signal(&condLock);
+                    pthread_mutex_unlock(&ackLock);
+                }
+                pthread_mutex_unlock( &stateMut );
+                break;
+            case ACK_LAB:
+                //6.5.1
+                pthread_mutex_lock( &stateMut );
+                if(state == InAwaitLab) {
+                    println("Received ACK_LAB");
+                    //6.5.1.1
+                    //pthread_mutex_lock(&labReqsLock);
+                    //if(packet.ts == labReqs[rank]){
+                        //5.4.1.1.1
+                    //}
+                    //pthread_mutex_unlock(&labReqsLock);
                     pthread_mutex_lock(&ackLock);
                     ackNum++;
                     pthread_cond_signal(&condLock);

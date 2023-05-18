@@ -17,7 +17,7 @@ pthread_mutex_t tsLock = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t counterLock = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t ackLock = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t devReqsLock = PTHREAD_MUTEX_INITIALIZER;
-
+pthread_mutex_t labReqsLock = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t stateMut = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t condLock = PTHREAD_COND_INITIALIZER;
 

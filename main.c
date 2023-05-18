@@ -3,7 +3,14 @@
 
 void finalize()
 {
-    pthread_mutex_destroy( &stateMut);
+    pthread_mutex_destroy(&tsLock);
+    pthread_mutex_destroy(&counterLock);
+    pthread_mutex_destroy(&ackLock);
+    pthread_mutex_destroy(&devReqsLock);
+    pthread_mutex_destroy(&labReqsLock);
+    pthread_mutex_destroy(&stateMut);
+    pthread_cond_destroy(&condLock);
+
     /* Wait for child threads */
     println("Awaiting communication thread\n" );
     pthread_join(threadCom,NULL);

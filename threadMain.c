@@ -103,6 +103,7 @@ void awaitDevice(){
 // 5.4
 void hunt(){
 	// 5.4.1
+	pthread_mutex_lock(&devReqsLock);
 	for (int i = 0; i < numThief; i++){
 		if(devReqs[i] != INF){
 			pthread_mutex_lock(&counterLock);
@@ -112,7 +113,6 @@ void hunt(){
 		}
 	}
 	// ?.?.? clear queue
-	pthread_mutex_lock(&devReqsLock);
 	resetQueue(devReqs);
 	pthread_mutex_unlock(&devReqsLock);
 	// 5.4.2
@@ -136,20 +136,47 @@ void hunt(){
 	}
 };
 
-// TODO
+//5.5
 void awaitLab(){
-	println("Robotaju w Labie");
-	sleep(5);
-	changeState(InPrepare);
+	println("I'm awaiting a lab station!");
+	//5.5.1
+	pthread_mutex_lock(&tsLock);
+	requestStation(rank); //reqlab
+	pthread_mutex_unlock(&tsLock);
+	//5.5.2
+	pthread_mutex_lock(&ackLock);
+	while(!(ackNum >= numThief - numLab)){
+		pthread_cond_wait(&condLock, &ackLock);
+	}
+	pthread_mutex_unlock(&ackLock);
+	//5.5.3
+	pthread_mutex_lock(&ackLock);
+	ackNum = 0;
+	pthread_mutex_unlock(&ackLock);
+	//5.5.4
+	changeState(InWorkLab);
 };
 
-// TODO
+//5.6
 void workLab(){
-	
+	//5.6.1
+	int workDuration = random()%1000;
+	sleep(workDuration/100);
+	//5.6.2
+	pthread_mutex_lock(&labReqsLock);
+	for (int i = 0; i < numThief; i++){
+		if(labReqs[i] != INF){
+			sendPacket(i, ACK_DEV);
+		}
+	}
+	resetQueue(labReqs);
+	pthread_mutex_unlock(&labReqsLock);
+	//5.6.3
+	changeState(InPrepare);
 }
 
 void *releaseDevice(void *ptr){
-	// 5.4.3.1.1.1 TODO
+	// 5.4.3.1.1.1
 	sleep(CHARGE_TIME);
 	println("The device finished charging!");
 	// 5.4.3.1.1.2

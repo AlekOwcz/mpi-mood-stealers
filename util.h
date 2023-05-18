@@ -6,7 +6,8 @@
 #include <stdio.h>
 /* Sends REQUEST_DEV to all other processes */
 void requestDevice(int rank);
-
+/* Sends REQUEST_LAB to all other processes */
+void requestStation(int rank);
 /* Decides priority between processes */
 bool hasPriority(int myRank, int myTs, int otherRank, int otherTs);
 

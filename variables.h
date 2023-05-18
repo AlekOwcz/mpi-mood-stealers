@@ -22,6 +22,7 @@ extern pthread_mutex_t counterLock;
 extern pthread_mutex_t ackLock;
 extern pthread_mutex_t devReqsLock;
 extern pthread_mutex_t stateMut;
+extern pthread_cond_t condLock;
 
 extern state_t state;
 

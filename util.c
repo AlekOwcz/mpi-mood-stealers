@@ -31,7 +31,7 @@ void requestDevice(int rank){
     println("Sending REQUEST_DEV to all")
     packet_t* pkt = malloc(sizeof(packet_t));
     pkt->rank = rank;
-    pkt->ts = ts++;
+    pkt->ts = ++ts;
     addToQueue(devReqs, rank, ts);
     for (int i = 0; i < numThief; i++)
 		if (i != rank) {

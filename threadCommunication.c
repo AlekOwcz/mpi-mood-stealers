@@ -27,6 +27,7 @@ void *startComThread(void *ptr)
                 pthread_mutex_lock(&counterLock);
                 // 6.1.1
                 counterDev++;
+                pthread_cond_signal(&condLock);
                 pthread_mutex_unlock(&counterLock);
                 break;
             // 6.2
@@ -66,6 +67,7 @@ void *startComThread(void *ptr)
                     println("Received ACK_DEV");
                     pthread_mutex_lock(&ackLock);
                     ackNum++;
+                    pthread_cond_signal(&condLock);
                     pthread_mutex_unlock(&ackLock);
                 }
                 pthread_mutex_unlock( &stateMut );

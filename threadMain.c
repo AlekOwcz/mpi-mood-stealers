@@ -71,21 +71,23 @@ void awaitDevice(){
 	pthread_mutex_lock(&counterLock);
 	counterDev--;
 	pthread_mutex_unlock(&counterLock);
-	// ?.?.? Dodaje sie do kolejki zeby mial jak sie porownac dla innych requestow
-
-	// pthread_mutex_lock(&ackLock);
-	// //ackNum = 0; // moja inwencja (na wszelki wypadek, nw czy cos zmienia)
-	// pthread_mutex_unlock(&ackLock);
+	// ?.?.? wew. requestDevice dodaje sie do kolejki zeby mial jak sie porownac dla innych requestow
 	// 5.3.2
 	requestDevice(rank);
 	pthread_mutex_unlock(&devReqsLock);
 	pthread_mutex_unlock(&tsLock);
 
 	// 5.3.3
-	while(1) {
-		if(ackNum == numThief - 1 && counterDev >= 0) ////TODO: CHANGE ACTIVE WAIT - MUTEX AND MESSAGE
-			break;
+	pthread_mutex_lock(&ackLock);
+	while(!(ackNum >= numThief - 1)){
+		pthread_cond_wait(&condLock, &ackLock);
 	}
+	pthread_mutex_unlock(&ackLock);
+	pthread_mutex_lock(&counterLock);
+	while(!(counterDev >= 0)){
+		pthread_cond_wait(&condLock, &counterLock);
+	}
+	pthread_mutex_unlock(&counterLock);
 	// ?.?.? Usuwa sie z kolejki
 	pthread_mutex_lock(&devReqsLock);
 	leaveQueue(devReqs, rank); // self

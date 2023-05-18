@@ -167,7 +167,7 @@ void workLab(){
 	pthread_mutex_lock(&labReqsLock);
 	for (int i = 0; i < numThief; i++){
 		if(labReqs[i] != INF){
-			sendPacket(i, ACK_DEV);
+			sendPacket(i, ACK_LAB);
 		}
 	}
 	resetQueue(labReqs);

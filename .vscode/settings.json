@@ -17,6 +17,7 @@
         "functional": "c",
         "random": "c",
         "ostream": "c",
-        "streambuf": "c"
+        "streambuf": "c",
+        "type_traits": "c"
     }
 }

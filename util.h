@@ -22,11 +22,11 @@ void changeState(state_t);
 
 /* Debug - works like printf when difined - else works as an empty instruction*/
 #ifdef DEBUG
-#define debug(FORMAT,...) printf("%c[%d;%dm [%d]: LAMPORT[%d]:" FORMAT "%c[%d;%dm\n",  27, (1+(rank/7))%2, 31+(6+rank)%7, rank, ts, ##__VA_ARGS__, 27,0,37);
+#define debug(FORMAT,...) printf("%c[%d;%dm [%02d]::TS[%06d]::ACK[%02d]::DEV[%06d]::STATE[%02d]::::" FORMAT "%c[%d;%dm\n",  27, (1+(rank/7))%2, 31+(6+rank)%7, rank, ts, ackNum, counterDev, state, ##__VA_ARGS__, 27,0,37);
 #else
 #define debug(...) ;
 #endif
 /* Used like printf, adds color and tags for timestamp, current ackCounter value and devCounter*/
-#define println(FORMAT,...) printf("%c[%d;%dm [%d]: TS [%d]: ACK [%d]: DEV [%d]: " FORMAT "%c[%d;%dm\n",  27, (1+(rank/7))%2, 31+(6+rank)%7, rank, ts, ackNum, counterDev, ##__VA_ARGS__, 27,0,37);
+#define println(FORMAT,...) printf("%c[%d;%dm [%02d]::TS[%06d]::ACK[%02d]::DEV[%06d]::STATE[%02d]::::" FORMAT "%c[%d;%dm\n",  27, (1+(rank/7))%2, 31+(6+rank)%7, rank, ts, ackNum, counterDev, state, ##__VA_ARGS__, 27,0,37);
 
 #endif

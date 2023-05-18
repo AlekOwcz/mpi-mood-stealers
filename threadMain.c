@@ -159,6 +159,7 @@ void awaitLab(){
 
 //5.6
 void workLab(){
+	println("I have acquired a lab station!");
 	//5.6.1
 	int workDuration = random()%1000;
 	sleep(workDuration/100);

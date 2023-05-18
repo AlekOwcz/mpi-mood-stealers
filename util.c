@@ -41,7 +41,7 @@ void requestDevice(int rank){
     free(pkt);
 }
 
-void requestStation(int rank){/////////////
+void requestStation(int rank){
     println("Sending REQUEST_LAB to all")
     packet_t* pkt = malloc(sizeof(packet_t));
     pkt->rank = rank;
